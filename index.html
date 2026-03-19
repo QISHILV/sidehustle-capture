@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<!-- saved from url=(0054)file:///Users/max/sidehustle-capture-landing.html#demo -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SideHustle Capture — 上班摸鱼，安全记录副业灵感</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #07070f;
+    --bg2: #0e0e1a;
+    --bg3: #13131f;
+    --border: rgba(255,255,255,0.08);
+    --text: #e8e8f0;
+    --muted: #7a7a9a;
+    --accent: #7c6af7;
+    --accent2: #a78bfa;
+    --green: #34d399;
+    --red: #f87171;
+    --grad: linear-gradient(135deg, #7c6af7 0%, #a78bfa 50%, #c084fc 100%);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', -apple-system, 'PingFang SC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 40px;
+    background: rgba(7,7,15,0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+  .nav-logo span { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500; transition: color .2s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta {
+    background: var(--grad); color: #fff; border: none; padding: 10px 22px;
+    border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;
+    transition: opacity .2s, transform .2s;
+  }
+  .nav-cta:hover { opacity: .85; transform: translateY(-1px); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 120px 24px 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-glow {
+    position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(124,106,247,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(124,106,247,0.12); border: 1px solid rgba(124,106,247,0.3);
+    padding: 6px 16px; border-radius: 100px; font-size: 13px; font-weight: 500;
+    color: var(--accent2); margin-bottom: 28px;
+  }
+  .hero-badge .dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse-dot 2s infinite; }
+  @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+
+  h1 {
+    font-size: clamp(40px, 6vw, 72px);
+    font-weight: 800; letter-spacing: -2px; line-height: 1.1;
+    margin-bottom: 24px;
+  }
+  h1 .line2 { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+  .hero-sub {
+    font-size: clamp(16px, 2vw, 20px); color: var(--muted); max-width: 560px;
+    margin: 0 auto 40px; font-weight: 400;
+  }
+
+  .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 64px; }
+  .btn-primary {
+    background: var(--grad); color: #fff; border: none;
+    padding: 14px 32px; border-radius: 10px; font-size: 16px; font-weight: 600;
+    cursor: pointer; transition: all .2s; text-decoration: none; display: inline-block;
+  }
+  .btn-primary:hover { opacity: .85; transform: translateY(-2px); box-shadow: 0 8px 32px rgba(124,106,247,0.4); }
+  .btn-ghost {
+    background: transparent; color: var(--text); border: 1px solid var(--border);
+    padding: 14px 32px; border-radius: 10px; font-size: 16px; font-weight: 500;
+    cursor: pointer; transition: all .2s; text-decoration: none; display: inline-block;
+  }
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.04); }
+
+  /* ── BOSS KEY DEMO ── */
+  .demo-wrapper {
+    width: 100%; max-width: 860px; margin: 0 auto;
+    position: relative;
+  }
+  .demo-label {
+    font-size: 12px; color: var(--muted); text-align: center; margin-bottom: 12px;
+    letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  .demo-window {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+  }
+  .demo-titlebar {
+    background: var(--bg3); padding: 12px 16px;
+    display: flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .dot-red { width:12px;height:12px;border-radius:50%;background:#ff5f57; }
+  .dot-yellow { width:12px;height:12px;border-radius:50%;background:#febc2e; }
+  .dot-green { width:12px;height:12px;border-radius:50%;background:#28c840; }
+  .demo-title { font-size: 13px; color: var(--muted); margin-left: 8px; }
+
+  /* App screen inside demo */
+  .app-screen { padding: 24px; min-height: 340px; transition: all .5s ease; }
+
+  /* Normal mode */
+  .screen-normal { display: block; }
+  .app-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .app-logo-text { font-size: 15px; font-weight: 700; }
+  .app-logo-text span { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .boss-key-badge {
+    font-size: 11px; background: rgba(124,106,247,0.15); border: 1px solid rgba(124,106,247,0.3);
+    color: var(--accent2); padding: 4px 10px; border-radius: 6px; font-weight: 500;
+  }
+  .capture-box {
+    background: var(--bg3); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px; margin-bottom: 16px;
+  }
+  .capture-input {
+    width: 100%; background: transparent; border: none; outline: none;
+    color: var(--text); font-size: 14px; font-family: inherit; resize: none; min-height: 60px;
+  }
+  .capture-input::placeholder { color: var(--muted); }
+  .capture-actions { display: flex; gap: 8px; margin-top: 12px; }
+  .mini-btn {
+    padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600;
+    border: none; cursor: pointer;
+  }
+  .mini-btn-primary { background: var(--accent); color: #fff; }
+  .mini-btn-voice { background: rgba(52,211,153,0.15); color: var(--green); border: 1px solid rgba(52,211,153,0.3); }
+  .idea-list { display: flex; flex-direction: column; gap: 8px; }
+  .idea-item {
+    background: var(--bg3); border-left: 3px solid var(--accent);
+    padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 13px;
+  }
+  .idea-item .idea-time { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  /* Boss mode (disguise) */
+  .screen-boss { display: none; }
+  .slack-sidebar {
+    display: flex; height: 300px;
+  }
+  .slack-left {
+    width: 200px; background: #3f0e40; padding: 16px 12px;
+    border-right: 1px solid rgba(255,255,255,0.1); flex-shrink: 0;
+  }
+  .slack-workspace { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 16px; }
+  .slack-channel { font-size: 13px; color: rgba(255,255,255,0.6); padding: 4px 8px; border-radius: 4px; margin-bottom: 2px; cursor: pointer; }
+  .slack-channel.active { background: rgba(255,255,255,0.15); color: #fff; }
+  .slack-main { flex: 1; padding: 16px; overflow: hidden; }
+  .slack-msg { display: flex; gap: 10px; margin-bottom: 14px; }
+  .slack-avatar { width: 32px; height: 32px; border-radius: 4px; flex-shrink: 0; font-size: 16px; display: flex; align-items: center; justify-content: center; background: var(--bg3); }
+  .slack-msg-body .slack-name { font-size: 13px; font-weight: 700; color: #fff; }
+  .slack-msg-body .slack-text { font-size: 13px; color: rgba(255,255,255,0.75); margin-top: 2px; }
+  .slack-input-bar {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 6px; padding: 8px 12px; font-size: 13px; color: rgba(255,255,255,0.4);
+    margin-top: 8px;
+  }
+
+  /* Toggle button */
+  .boss-key-toggle {
+    position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%);
+    background: var(--bg3); border: 1px solid var(--border);
+    color: var(--muted); font-size: 12px; padding: 6px 16px; border-radius: 100px;
+    cursor: pointer; transition: all .2s; white-space: nowrap;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .boss-key-toggle:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+  .kbd {
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+    padding: 1px 6px; border-radius: 4px; font-size: 11px; font-family: monospace;
+  }
+
+  /* ── SOCIAL PROOF ── */
+  .social-proof {
+    padding: 60px 24px 0;
+    text-align: center;
+  }
+  .social-proof p { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+  .avatars { display: flex; justify-content: center; align-items: center; gap: -8px; }
+  .avatar-stack { display: flex; }
+  .avatar-stack .av {
+    width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--bg);
+    margin-left: -8px; font-size: 16px; display: flex; align-items: center; justify-content: center;
+    background: var(--bg3);
+  }
+  .av:first-child { margin-left: 0; }
+  .social-count { font-size: 14px; font-weight: 600; margin-left: 12px; }
+  .social-count span { color: var(--accent2); }
+
+  /* ── VALUE PROPS ── */
+  .value-section {
+    padding: 100px 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .value-headline {
+    text-align: center;
+    font-size: clamp(13px, 1.5vw, 15px);
+    font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--accent2); margin-bottom: 20px;
+  }
+  .value-title {
+    font-size: clamp(30px, 4.5vw, 52px);
+    font-weight: 800; letter-spacing: -2px; line-height: 1.15;
+    text-align: center; margin-bottom: 16px;
+  }
+  .value-title .hl { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .value-desc {
+    font-size: 17px; color: var(--muted); text-align: center;
+    max-width: 540px; margin: 0 auto 64px;
+  }
+  .value-cards {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+  .value-card {
+    border-radius: 20px; padding: 36px 32px;
+    position: relative; overflow: hidden;
+    border: 1px solid var(--border);
+    transition: transform .3s, border-color .3s;
+  }
+  .value-card:hover { transform: translateY(-6px); }
+  .value-card-1 {
+    background: linear-gradient(145deg, rgba(124,106,247,0.12) 0%, var(--bg2) 60%);
+    border-color: rgba(124,106,247,0.25);
+  }
+  .value-card-1:hover { border-color: rgba(124,106,247,0.5); }
+  .value-card-2 {
+    background: linear-gradient(145deg, rgba(52,211,153,0.1) 0%, var(--bg2) 60%);
+    border-color: rgba(52,211,153,0.2);
+  }
+  .value-card-2:hover { border-color: rgba(52,211,153,0.45); }
+  .value-card-3 {
+    background: linear-gradient(145deg, rgba(251,191,36,0.1) 0%, var(--bg2) 60%);
+    border-color: rgba(251,191,36,0.2);
+  }
+  .value-card-3:hover { border-color: rgba(251,191,36,0.45); }
+  .value-card-tag {
+    display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; padding: 4px 12px; border-radius: 100px;
+    margin-bottom: 20px;
+  }
+  .tag-purple { background: rgba(124,106,247,0.2); color: var(--accent2); }
+  .tag-green  { background: rgba(52,211,153,0.15); color: var(--green); }
+  .tag-gold   { background: rgba(251,191,36,0.15); color: #fbbf24; }
+  .value-card-icon { font-size: 40px; margin-bottom: 16px; display: block; }
+  .value-card h3 {
+    font-size: 22px; font-weight: 800; letter-spacing: -0.5px;
+    margin-bottom: 12px; line-height: 1.2;
+  }
+  .value-card p { font-size: 15px; color: var(--muted); line-height: 1.75; }
+  .value-card .value-quote {
+    margin-top: 20px; padding: 14px 16px;
+    background: rgba(255,255,255,0.04); border-left: 3px solid;
+    border-radius: 0 8px 8px 0; font-size: 13px; color: var(--muted);
+    font-style: italic; line-height: 1.6;
+  }
+  .value-card-1 .value-quote { border-color: var(--accent); }
+  .value-card-2 .value-quote { border-color: var(--green); }
+  .value-card-3 .value-quote { border-color: #fbbf24; }
+
+  @media (max-width: 768px) {
+    .value-cards { grid-template-columns: 1fr; }
+  }
+
+  /* ── FEATURES ── */
+  .section { padding: 100px 24px; max-width: 1100px; margin: 0 auto; }
+  .section-label {
+    font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--accent2); margin-bottom: 16px; text-align: center;
+  }
+  .section-title {
+    font-size: clamp(28px, 4vw, 44px); font-weight: 800; letter-spacing: -1.5px;
+    text-align: center; margin-bottom: 16px;
+  }
+  .section-sub { font-size: 17px; color: var(--muted); text-align: center; max-width: 520px; margin: 0 auto 64px; }
+
+  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .feature-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 16px; padding: 28px;
+    transition: border-color .3s, transform .3s;
+  }
+  .feature-card:hover { border-color: rgba(124,106,247,0.4); transform: translateY(-4px); }
+  .feature-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: rgba(124,106,247,0.12); border: 1px solid rgba(124,106,247,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; margin-bottom: 16px;
+  }
+  .feature-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.3px; }
+  .feature-card p { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+  /* ── HOW IT WORKS ── */
+  .how-section { padding: 100px 24px; background: var(--bg2); }
+  .how-inner { max-width: 1100px; margin: 0 auto; }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 64px; }
+  .step { text-align: center; padding: 0 16px; }
+  .step-num {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--grad); color: #fff; font-size: 18px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+  }
+  .step h4 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .step p { font-size: 14px; color: var(--muted); }
+
+  /* ── PRICING ── */
+  .pricing-section { padding: 100px 24px; max-width: 1100px; margin: 0 auto; }
+  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 64px; }
+  .pricing-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 20px; padding: 32px; position: relative;
+    transition: transform .3s;
+  }
+  .pricing-card:hover { transform: translateY(-4px); }
+  .pricing-card.popular {
+    border-color: rgba(124,106,247,0.5);
+    background: linear-gradient(135deg, rgba(124,106,247,0.08) 0%, var(--bg2) 100%);
+  }
+  .popular-badge {
+    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+    background: var(--grad); color: #fff; font-size: 11px; font-weight: 700;
+    padding: 4px 14px; border-radius: 100px; letter-spacing: 0.5px; white-space: nowrap;
+  }
+  .plan-name { font-size: 14px; font-weight: 600; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+  .plan-price { font-size: 44px; font-weight: 800; letter-spacing: -2px; margin-bottom: 4px; }
+  .plan-price sup { font-size: 20px; font-weight: 600; vertical-align: top; margin-top: 10px; display: inline-block; }
+  .plan-price .period { font-size: 16px; font-weight: 400; color: var(--muted); }
+  .plan-desc { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
+  .plan-features { list-style: none; margin-bottom: 28px; }
+  .plan-features li { font-size: 14px; padding: 8px 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  .plan-features li:last-child { border-bottom: none; }
+  .check { color: var(--green); font-size: 16px; }
+  .plan-btn {
+    width: 100%; padding: 13px; border-radius: 10px; font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: all .2s; border: none;
+  }
+  .plan-btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  .plan-btn-outline:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.04); }
+  .plan-btn-primary { background: var(--grad); color: #fff; }
+  .plan-btn-primary:hover { opacity: .85; box-shadow: 0 8px 24px rgba(124,106,247,0.4); }
+
+  /* ── WAITLIST ── */
+  .waitlist-section {
+    padding: 100px 24px;
+    background: var(--bg2);
+    text-align: center;
+  }
+  .waitlist-inner { max-width: 560px; margin: 0 auto; }
+  .waitlist-section h2 { font-size: clamp(28px, 4vw, 44px); font-weight: 800; letter-spacing: -1.5px; margin-bottom: 16px; }
+  .waitlist-section p { font-size: 17px; color: var(--muted); margin-bottom: 40px; }
+  .waitlist-form { display: flex; gap: 10px; max-width: 480px; margin: 0 auto 16px; }
+  .waitlist-input {
+    flex: 1; background: var(--bg3); border: 1px solid var(--border);
+    color: var(--text); padding: 14px 18px; border-radius: 10px; font-size: 15px;
+    font-family: inherit; outline: none; transition: border-color .2s;
+  }
+  .waitlist-input:focus { border-color: rgba(124,106,247,0.5); }
+  .waitlist-input::placeholder { color: var(--muted); }
+  .waitlist-submit {
+    background: var(--grad); color: #fff; border: none;
+    padding: 14px 28px; border-radius: 10px; font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: all .2s; white-space: nowrap;
+  }
+  .waitlist-submit:hover { opacity: .85; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(124,106,247,0.4); }
+  .waitlist-note { font-size: 13px; color: var(--muted); }
+  .waitlist-note span { color: var(--green); }
+
+  /* Success state */
+  .waitlist-success {
+    display: none; background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.3);
+    border-radius: 12px; padding: 20px 24px; text-align: center;
+  }
+  .waitlist-success .success-icon { font-size: 32px; margin-bottom: 8px; }
+  .waitlist-success h4 { font-size: 18px; font-weight: 700; color: var(--green); margin-bottom: 4px; }
+  .waitlist-success p { font-size: 14px; color: var(--muted); }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 40px 24px; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    max-width: 1100px; margin: 0 auto;
+  }
+  footer .footer-logo { font-size: 15px; font-weight: 700; }
+  footer .footer-logo span { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  footer p { font-size: 13px; color: var(--muted); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 16px 20px; }
+    .nav-links { display: none; }
+    .features-grid { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: repeat(2, 1fr); }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .waitlist-form { flex-direction: column; }
+    footer { flex-direction: column; gap: 12px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">💡 <span>SideHustle</span> Capture</div>
+  <div class="nav-links">
+    <a href="file:///Users/max/sidehustle-capture-landing.html#features">功能</a>
+    <a href="file:///Users/max/sidehustle-capture-landing.html#how">使用方式</a>
+    <a href="file:///Users/max/sidehustle-capture-landing.html#pricing">定价</a>
+  </div>
+  <button class="nav-cta" onclick="document.getElementById(&#39;waitlist&#39;).scrollIntoView({behavior:&#39;smooth&#39;})">加入候补名单</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-badge">
+    <span class="dot"></span>
+    现已开放早期候补 · 前 500 名免费 Pro 3 个月
+  </div>
+  <h1>
+    AI 时代，你的想法<br>
+    <span class="line2">才是核心竞争力</span>
+  </h1>
+  <p class="hero-sub">
+    想法能创造财富，能带来成长，能让你在 AI 浪潮里站稳脚跟。<br>别让它们消失在忙碌的工作日里。
+  </p>
+  <div class="hero-btns">
+    <a href="file:///Users/max/sidehustle-capture-landing.html#waitlist" class="btn-primary">免费加入候补 →</a>
+    <a href="file:///Users/max/sidehustle-capture-landing.html#demo" class="btn-ghost">看演示</a>
+  </div>
+
+  <!-- BOSS KEY DEMO -->
+  <div class="demo-wrapper" id="demo">
+    <p class="demo-label">👇 点击下方按钮体验 Boss Key</p>
+    <div class="demo-window">
+      <div class="demo-titlebar">
+        <div class="dot-red"></div>
+        <div class="dot-yellow"></div>
+        <div class="dot-green"></div>
+        <span class="demo-title" id="demo-title-text">SideHustle Capture</span>
+      </div>
+
+      <!-- Normal App Screen -->
+      <div class="app-screen screen-normal" id="screen-normal" style="display: block;">
+        <div class="app-header">
+          <div class="app-logo-text">💡 <span>SideHustle</span> Capture</div>
+          <div class="boss-key-badge">ESC 切换伪装</div>
+        </div>
+        <div class="capture-box">
+          <textarea class="capture-input" placeholder="说说你的想法... 比如「做一个帮上班族记录副业灵感的工具」" readonly=""></textarea>
+          <div class="capture-actions">
+            <button class="mini-btn mini-btn-primary">💾 保存</button>
+            <button class="mini-btn mini-btn-voice">🎤 语音</button>
+          </div>
+        </div>
+        <div class="idea-list">
+          <div class="idea-item">
+            做一个 Notion 模板卖给独立开发者，定价 $29
+            <div class="idea-time">⏰ 2分钟前 · #副业 #产品</div>
+          </div>
+          <div class="idea-item">
+            用 Claude API 做一个自动写周报的工具，公司内部需求很大
+            <div class="idea-time">⏰ 1小时前 · #AI #工具</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Boss Mode Screen (Slack disguise) -->
+      <div class="app-screen screen-boss" id="screen-boss" style="display: none;">
+        <div class="slack-sidebar">
+          <div class="slack-left">
+            <div class="slack-workspace">Acme Corp</div>
+            <div class="slack-channel"># general</div>
+            <div class="slack-channel active"># engineering</div>
+            <div class="slack-channel"># design</div>
+            <div class="slack-channel"># random</div>
+          </div>
+          <div class="slack-main">
+            <div class="slack-msg">
+              <div class="slack-avatar">👩</div>
+              <div class="slack-msg-body">
+                <div class="slack-name">Sarah Chen <span style="font-size:11px;color:#666;font-weight:400">今天 10:32</span></div>
+                <div class="slack-text">PR review 完了，可以 merge 了 ✅</div>
+              </div>
+            </div>
+            <div class="slack-msg">
+              <div class="slack-avatar">👨</div>
+              <div class="slack-msg-body">
+                <div class="slack-name">Alex Wang <span style="font-size:11px;color:#666;font-weight:400">今天 10:45</span></div>
+                <div class="slack-text">下午 3 点 standup 记得参加</div>
+              </div>
+            </div>
+            <div class="slack-input-bar">给 #engineering 发消息...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="boss-key-toggle" id="bossKeyBtn" onclick="toggleBossKey()">
+      <span id="bossKeyLabel">🕵️ 开启 Boss Key 伪装</span>
+      <span class="kbd">ESC</span>
+    </button>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF -->
+<div class="social-proof">
+  <div class="avatar-stack">
+    <div class="av">😊</div>
+    <div class="av">🧑</div>
+    <div class="av">👩</div>
+    <div class="av">🧔</div>
+    <div class="av">👨</div>
+  </div>
+  <p style="margin-top:12px">已有 <strong style="color:#e8e8f0">312 位</strong> 上班族副业人加入候补</p>
+</div>
+
+<!-- VALUE PROPS -->
+<section class="value-section">
+  <div class="value-headline">为什么想法如此重要</div>
+  <h2 class="value-title">每一个想法，都是<span class="hl">未被开采的矿</span></h2>
+  <p class="value-desc">在 AI 工具泛滥的时代，执行力可以外包，但想法无法复制。你脑子里那些一闪而过的念头，才是真正属于你的资产。</p>
+  <div class="value-cards">
+
+    <div class="value-card value-card-1">
+      <span class="value-card-tag tag-purple">竞争力</span>
+      <span class="value-card-icon">🧠</span>
+      <h3>想法是你在 AI 时代的护城河</h3>
+      <p>AI 可以写代码、做设计、写文案——但它无法替你产生洞察。你对行业的独特理解、你发现的用户痛点、你脑子里那个"为什么没人做这个"的瞬间，才是别人无法复制的竞争优势。</p>
+      <div class="value-quote">"未来 10 年，最值钱的能力不是执行，而是提出正确的问题。"</div>
+    </div>
+
+    <div class="value-card value-card-2">
+      <span class="value-card-tag tag-green">财富</span>
+      <span class="value-card-icon">💰</span>
+      <h3>一个想法，可以改变你的收入曲线</h3>
+      <p>Notion 模板、独立工具、内容账号、咨询服务——无数副业都始于一个普通工作日里的灵光一现。问题不是你没有好想法，而是它们在你打开备忘录之前就消失了。</p>
+      <div class="value-quote">"我那个月入 3 万的副业，最初只是午休时随手记的一句话。"</div>
+    </div>
+
+    <div class="value-card value-card-3">
+      <span class="value-card-tag tag-gold">成长</span>
+      <span class="value-card-icon">🌱</span>
+      <h3>记录想法，是最快的自我复利</h3>
+      <p>每一次记录都是一次思考的沉淀。当你回顾 3 个月前的想法，你会发现自己的认知已经悄悄升级。想法库越积越厚，你的判断力、创造力和行动力也在同步复利增长。</p>
+      <div class="value-quote">"我的想法库是我最重要的个人资产，没有之一。"</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-label">核心功能</div>
+  <h2 class="section-title">保护你的每一个想法资产</h2>
+  <p class="section-sub">从捕获到孵化到执行，全程守护你的灵感不流失</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🕵️</div>
+      <h3>Boss Key 伪装模式</h3>
+      <p>一键切换成 Slack / Excel / 文档界面，老板走过来按 ESC，瞬间变成"正在工作"。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>零摩擦快速捕获</h3>
+      <p>全局快捷键唤起输入框，文字 / 语音 / 截图 / 链接一键保存，想法来了 3 秒内记录完毕。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎤</div>
+      <h3>中文语音识别</h3>
+      <p>针对中文优化的语音转文字，支持普通话 / 粤语，通勤路上说话就能记录，准确率 95%+。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🧠</div>
+      <h3>AI 想法孵化</h3>
+      <p>AI 自动打标签、聚类相似想法，7 天后提醒你回顾，帮你发现哪些想法值得深入执行。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🚀</div>
+      <h3>想法→行动转化</h3>
+      <p>一键把想法拆解成可执行的行动计划，估算所需时间，匹配你的碎片时间块。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <h3>本地优先 · 隐私安全</h3>
+      <p>数据默认存本地，可选加密云同步。你的副业想法只属于你，不会被任何人看到。</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="how-inner">
+    <div class="section-label">使用方式</div>
+    <h2 class="section-title">4 步，从想法到行动</h2>
+    <p class="section-sub">最快 10 秒完成一次想法捕获</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h4>想法来了</h4>
+        <p>按 Cmd+Shift+I 唤起输入框，或直接语音说出来</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h4>一键保存</h4>
+        <p>Cmd+Enter 保存，AI 自动打标签，窗口自动消失</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h4>AI 孵化</h4>
+        <p>7 天后收到提醒，AI 帮你分析可行性和相似想法</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h4>开始执行</h4>
+        <p>一键生成行动计划，利用午休 / 通勤时间推进副业</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing-section" id="pricing">
+  <div class="section-label">定价</div>
+  <h2 class="section-title">简单透明，无隐藏费用</h2>
+  <p class="section-sub">早期用户享受特别优惠，随时可取消</p>
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="plan-name">免费版</div>
+      <div class="plan-price">¥0<span class="period">/月</span></div>
+      <div class="plan-desc">够用的基础功能，永久免费</div>
+      <ul class="plan-features">
+        <li><span class="check">✓</span> 每月 100 条想法</li>
+        <li><span class="check">✓</span> 文字 + 语音捕获</li>
+        <li><span class="check">✓</span> Boss Key 伪装模式</li>
+        <li><span class="check">✓</span> 本地存储</li>
+        <li style="color:var(--muted)">✗ AI 孵化分析</li>
+        <li style="color:var(--muted)">✗ 行动计划生成</li>
+      </ul>
+      <button class="plan-btn plan-btn-outline" onclick="document.getElementById(&#39;waitlist&#39;).scrollIntoView({behavior:&#39;smooth&#39;})">免费开始</button>
+    </div>
+    <div class="pricing-card popular">
+      <div class="popular-badge">🔥 最受欢迎</div>
+      <div class="plan-name">Pro 版</div>
+      <div class="plan-price"><sup>¥</sup>29<span class="period">/月</span></div>
+      <div class="plan-desc">早期用户价，正式上线后 ¥49/月</div>
+      <ul class="plan-features">
+        <li><span class="check">✓</span> 无限想法记录</li>
+        <li><span class="check">✓</span> 文字 + 语音 + 图片</li>
+        <li><span class="check">✓</span> 全部伪装皮肤</li>
+        <li><span class="check">✓</span> AI 想法孵化 + 聚类</li>
+        <li><span class="check">✓</span> 行动计划自动生成</li>
+        <li><span class="check">✓</span> 加密云同步</li>
+      </ul>
+      <button class="plan-btn plan-btn-primary" onclick="document.getElementById(&#39;waitlist&#39;).scrollIntoView({behavior:&#39;smooth&#39;})">加入候补，锁定早鸟价</button>
+    </div>
+    <div class="pricing-card">
+      <div class="plan-name">终身版</div>
+      <div class="plan-price"><sup>¥</sup>299<span class="period"> 一次性</span></div>
+      <div class="plan-desc">买断制，Pro 全部功能永久使用</div>
+      <ul class="plan-features">
+        <li><span class="check">✓</span> Pro 版全部功能</li>
+        <li><span class="check">✓</span> 永久免费更新</li>
+        <li><span class="check">✓</span> 优先体验新功能</li>
+        <li><span class="check">✓</span> 专属 Discord 社群</li>
+        <li><span class="check">✓</span> 1v1 产品反馈通道</li>
+        <li><span class="check">✓</span> 早期用户专属徽章</li>
+      </ul>
+      <button class="plan-btn plan-btn-outline" onclick="document.getElementById(&#39;waitlist&#39;).scrollIntoView({behavior:&#39;smooth&#39;})">锁定终身价</button>
+    </div>
+  </div>
+</section>
+
+<!-- WAITLIST -->
+<section class="waitlist-section" id="waitlist">
+  <div class="waitlist-inner">
+    <div class="section-label">加入候补</div>
+    <h2>你的想法，值得被认真对待</h2>
+    <p>留下邮箱，产品上线第一时间通知你。前 500 名免费获得 Pro 版 3 个月，一起把想法变成财富。</p>
+    <div id="waitlist-form-wrap">
+      <div class="waitlist-form">
+        <input type="email" class="waitlist-input" id="emailInput" placeholder="your@email.com" style="border-color: rgba(248, 113, 113, 0.6);">
+        <button class="waitlist-submit" onclick="submitWaitlist()">加入候补 →</button>
+      </div>
+      <p class="waitlist-note"><span>✓</span> 不发垃圾邮件 &nbsp;·&nbsp; <span>✓</span> 随时退出 &nbsp;·&nbsp; 已有 <strong>312</strong> 人加入</p>
+    </div>
+    <div class="waitlist-success" id="waitlist-success">
+      <div class="success-icon">🎉</div>
+      <h4>你已成功加入候补名单！</h4>
+      <p>我们会在产品上线时第一时间发邮件通知你。<br>感谢你的支持，一起把副业做起来！</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">💡 <span>SideHustle</span> Capture</div>
+  <p>© 2025 SideHustle Capture · 专为上班族副业人打造</p>
+</footer>
+
+<script>
+  // Boss Key toggle
+  let bossMode = false;
+  function toggleBossKey() {
+    bossMode = !bossMode;
+    const normal = document.getElementById('screen-normal');
+    const boss = document.getElementById('screen-boss');
+    const label = document.getElementById('bossKeyLabel');
+    const titleText = document.getElementById('demo-title-text');
+    if (bossMode) {
+      normal.style.display = 'none';
+      boss.style.display = 'block';
+      label.textContent = '✅ 已伪装成 Slack，点击还原';
+      titleText.textContent = 'Slack — #engineering';
+    } else {
+      normal.style.display = 'block';
+      boss.style.display = 'none';
+      label.textContent = '🕵️ 开启 Boss Key 伪装';
+      titleText.textContent = 'SideHustle Capture';
+    }
+  }
+
+  // ESC key
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') toggleBossKey();
+  });
+
+  // Waitlist submit
+  function submitWaitlist() {
+    const email = document.getElementById('emailInput').value.trim();
+    if (!email || !email.includes('@')) {
+      document.getElementById('emailInput').style.borderColor = 'rgba(248,113,113,0.6)';
+      document.getElementById('emailInput').focus();
+      return;
+    }
+    document.getElementById('waitlist-form-wrap').style.display = 'none';
+    document.getElementById('waitlist-success').style.display = 'block';
+  }
+
+  document.getElementById('emailInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') submitWaitlist();
+    document.getElementById('emailInput').style.borderColor = '';
+  });
+</script>
+
+
+</body></html>
