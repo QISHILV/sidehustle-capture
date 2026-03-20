@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SideHustle Capture</title>
+<link rel="manifest" href="manifest.json">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #07070f; --bg2: #0e0e1a; --bg3: #13131f;
+  --border: rgba(255,255,255,0.08); --text: #e8e8f0;
+  --muted: #7a7a9a; --accent: #7c6af7;
+}
+body { font-family: -apple-system, 'PingFang SC', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+.header { padding: 16px 20px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.logo { font-size: 18px; font-weight: 700; }
+.sync-btn { background: var(--accent); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; cursor: pointer; }
+.container { max-width: 800px; margin: 0 auto; padding: 24px 20px; }
+.input-box { width: 100%; min-height: 120px; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; color: var(--text); font-size: 16px; resize: vertical; }
+.btn-add { background: var(--accent); color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 12px; width: 100%; }
+.ideas { margin-top: 32px; }
+.idea-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+.idea-time { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+.idea-text { font-size: 15px; white-space: pre-wrap; }
+.boss-screen { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 9999; }
+.boss-header { background: #4a154b; color: #fff; padding: 12px 20px; font-size: 18px; font-weight: 700; }
+.boss-content { padding: 20px; color: #1d1c1d; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.8; }
+.restore-hint { position: absolute; top: 0; right: 0; width: 60px; height: 60px; opacity: 0; }
+</style>
+</head>
+<body>
+
+<div class="header" id="header">
+  <div class="logo">💡 SideHustle</div>
+  <button class="sync-btn" onclick="syncData()">📱 同步</button>
+</div>
+
+<div class="container">
+  <textarea class="input-box" id="ideaInput" placeholder="记录你的副业灵感..."></textarea>
+  <button class="btn-add" onclick="addIdea()">➕ 添加想法</button>
+  <div class="ideas" id="ideasList"></div>
+</div>
+
+<div class="boss-screen" id="bossScreen">
+  <div class="boss-header">Slack — #engineering</div>
+  <div class="boss-content">
+@john: Hey team, quick update on the API refactor...<br><br>
+@sarah: Thanks! I'll review the PR this afternoon.<br><br>
+@mike: Can someone help with the deployment pipeline? Getting a timeout error.<br><br>
+@john: Sure, let me check the logs. Which environment?<br><br>
+@mike: Staging. Started happening after the last merge.<br><br>
+@sarah: I see it too. Looks like a Redis connection issue.
+  </div>
+  <div class="restore-hint" id="restoreHint"></div>
+</div>
+
+<script>
+const STORAGE_KEY = 'sidehustle_ideas';
+const SYNC_KEY = 'sidehustle_sync';
+
+function loadIdeas() {
+  const data = localStorage.getItem(STORAGE_KEY);
+  return data ? JSON.parse(data) : [];
+}
+
+function saveIdeas(ideas) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(ideas));
+  localStorage.setItem(SYNC_KEY, Date.now().toString());
+}
+
+function renderIdeas() {
+  const ideas = loadIdeas();
+  const list = document.getElementById('ideasList');
+  list.innerHTML = ideas.map(idea => `
+    <div class="idea-card">
+      <div class="idea-time">${new Date(idea.time).toLocaleString('zh-CN')}</div>
+      <div class="idea-text">${idea.text}</div>
+    </div>
+  `).join('');
+}
+
+function addIdea() {
+  const input = document.getElementById('ideaInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const ideas = loadIdeas();
+  ideas.unshift({ text, time: Date.now() });
+  saveIdeas(ideas);
+  input.value = '';
+  renderIdeas();
+}
+
+function syncData() {
+  const data = localStorage.getItem(STORAGE_KEY);
+  const blob = new Blob([data || '[]'], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `sidehustle_backup_${Date.now()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  alert('✅ 数据已导出！\n\n在另一设备上传此文件即可同步。');
+}
+
+let bossMode = false;
+function toggleBoss() {
+  bossMode = !bossMode;
+  document.getElementById('bossScreen').style.display = bossMode ? 'block' : 'none';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') toggleBoss();
+});
+
+let headerTaps = 0;
+let tapTimer;
+document.getElementById('header').addEventListener('click', () => {
+  headerTaps++;
+  clearTimeout(tapTimer);
+  if (headerTaps === 3) {
+    toggleBoss();
+    headerTaps = 0;
+  }
+  tapTimer = setTimeout(() => headerTaps = 0, 500);
+});
+
+let restoreTimer;
+document.getElementById('restoreHint').addEventListener('touchstart', () => {
+  restoreTimer = setTimeout(() => {
+    toggleBoss();
+  }, 3000);
+});
+document.getElementById('restoreHint').addEventListener('touchend', () => {
+  clearTimeout(restoreTimer);
+});
+
+renderIdeas();
+</script>
+
+</body>
+</html>
