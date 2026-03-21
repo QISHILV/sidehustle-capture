@@ -91,16 +91,29 @@ function addIdea() {
 }
 
 async function syncData() {
-  const token = localStorage.getItem('gh_token');
+  let token = localStorage.getItem('gh_token');
+  let gistId = localStorage.getItem('gist_id');
+
   if (!token) {
-    const input = prompt('首次使用需要 GitHub Token\n\n1. 访问 github.com/settings/tokens\n2. 创建 token (勾选 gist 权限)\n3. 粘贴到下方：');
+    const input = prompt('📱 首次配置\n\n【主设备】输入：GitHub Token\n【其他设备】输入：配置码\n\nToken 获取：github.com/settings/tokens\n(勾选 gist 权限)');
     if (!input) return;
-    localStorage.setItem('gh_token', input.trim());
-    location.reload();
-    return;
+
+    const trimmed = input.trim();
+
+    if (trimmed.includes(',')) {
+      const [t, g] = trimmed.split(',');
+      token = t.trim();
+      gistId = g.trim();
+      localStorage.setItem('gh_token', token);
+      localStorage.setItem('gist_id', gistId);
+      alert('✅ 配置成功！点击同步按钮开始同步数据。');
+      return;
+    } else {
+      token = trimmed;
+      localStorage.setItem('gh_token', token);
+    }
   }
 
-  const gistId = localStorage.getItem('gist_id');
   const localData = localStorage.getItem(STORAGE_KEY) || '[]';
 
   try {
@@ -115,8 +128,11 @@ async function syncData() {
         })
       });
       const data = await res.json();
-      localStorage.setItem('gist_id', data.id);
-      alert('✅ 已上传到云端！');
+      gistId = data.id;
+      localStorage.setItem('gist_id', gistId);
+
+      const configCode = `${token},${gistId}`;
+      prompt('✅ 云端已创建！\n\n📋 复制下方配置码到其他设备：', configCode);
     } else {
       const res = await fetch(`https://api.github.com/gists/${gistId}`, {
         headers: { 'Authorization': `token ${token}` }
