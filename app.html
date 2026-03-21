@@ -24,9 +24,8 @@ body { font-family: -apple-system, 'PingFang SC', sans-serif; background: var(--
 .idea-time { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
 .idea-text { font-size: 15px; white-space: pre-wrap; }
 .boss-screen { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 9999; }
-.boss-header { background: #4a154b; color: #fff; padding: 12px 20px; font-size: 18px; font-weight: 700; position: relative; }
+.boss-header { background: #4a154b; color: #fff; padding: 12px 20px; font-size: 18px; font-weight: 700; position: relative; cursor: pointer; }
 .boss-content { padding: 20px; color: #1d1c1d; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.8; }
-.restore-hint { position: absolute; top: 8px; right: 8px; width: 50px; height: 50px; background: rgba(255,255,255,0.03); border-radius: 4px; }
 </style>
 </head>
 <body>
@@ -43,7 +42,7 @@ body { font-family: -apple-system, 'PingFang SC', sans-serif; background: var(--
 </div>
 
 <div class="boss-screen" id="bossScreen">
-  <div class="boss-header">Slack — #engineering</div>
+  <div class="boss-header" id="bossHeader">Slack — #engineering</div>
   <div class="boss-content">
 @john: Hey team, quick update on the API refactor...<br><br>
 @sarah: Thanks! I'll review the PR this afternoon.<br><br>
@@ -52,7 +51,6 @@ body { font-family: -apple-system, 'PingFang SC', sans-serif; background: var(--
 @mike: Staging. Started happening after the last merge.<br><br>
 @sarah: I see it too. Looks like a Redis connection issue.
   </div>
-  <div class="restore-hint" id="restoreHint"></div>
 </div>
 
 <script>
@@ -162,7 +160,10 @@ document.addEventListener('keydown', e => {
 
 let headerTaps = 0;
 let tapTimer;
-document.getElementById('header').addEventListener('click', () => {
+const headerEl = document.getElementById('header');
+const bossHeaderEl = document.getElementById('bossHeader');
+
+headerEl.addEventListener('click', () => {
   headerTaps++;
   clearTimeout(tapTimer);
   if (headerTaps === 3) {
@@ -172,14 +173,14 @@ document.getElementById('header').addEventListener('click', () => {
   tapTimer = setTimeout(() => headerTaps = 0, 500);
 });
 
-let restoreTimer;
-document.getElementById('restoreHint').addEventListener('touchstart', () => {
-  restoreTimer = setTimeout(() => {
+bossHeaderEl.addEventListener('click', () => {
+  headerTaps++;
+  clearTimeout(tapTimer);
+  if (headerTaps === 3) {
     toggleBoss();
-  }, 3000);
-});
-document.getElementById('restoreHint').addEventListener('touchend', () => {
-  clearTimeout(restoreTimer);
+    headerTaps = 0;
+  }
+  tapTimer = setTimeout(() => headerTaps = 0, 500);
 });
 
 renderIdeas();
