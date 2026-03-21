@@ -216,11 +216,19 @@ function startReset() {
   }, 3000);
 }
 
-function cancelReset() {
+function cancelReset(e) {
   clearTimeout(resetTimer);
+  if (isLongPress && e) {
+    e.preventDefault();
+    e.stopPropagation();
+    setTimeout(() => { isLongPress = false; }, 100);
+  }
 }
 
-syncBtn.addEventListener('mousedown', startReset);
+syncBtn.addEventListener('mousedown', (e) => {
+  e.preventDefault();
+  startReset();
+});
 syncBtn.addEventListener('mouseup', cancelReset);
 syncBtn.addEventListener('mouseleave', cancelReset);
 syncBtn.addEventListener('touchstart', (e) => {
@@ -228,7 +236,7 @@ syncBtn.addEventListener('touchstart', (e) => {
   startReset();
 });
 syncBtn.addEventListener('touchend', (e) => {
-  cancelReset();
+  cancelReset(e);
   if (!isLongPress) {
     syncData();
   }
@@ -239,7 +247,6 @@ syncBtn.addEventListener('click', (e) => {
   if (isLongPress) {
     e.preventDefault();
     e.stopPropagation();
-    isLongPress = false;
   } else {
     syncData();
   }
