@@ -31,7 +31,7 @@ body { font-family: -apple-system, 'PingFang SC', sans-serif; background: var(--
 <body>
 
 <div class="header" id="header">
-  <div class="logo">💡 SideHustle</div>
+  <div class="logo">💡 SideHustle <span style="font-size:10px;opacity:0.5;">v1.0.1</span></div>
   <button class="sync-btn" id="syncBtn">📱 同步</button>
 </div>
 
@@ -251,6 +251,14 @@ syncBtn.addEventListener('click', (e) => {
     syncData();
   }
 });
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').then(() => {
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      window.location.reload();
+    });
+  });
+}
 
 renderIdeas();
 </script>
