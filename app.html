@@ -24,9 +24,9 @@ body { font-family: -apple-system, 'PingFang SC', sans-serif; background: var(--
 .idea-time { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
 .idea-text { font-size: 15px; white-space: pre-wrap; }
 .boss-screen { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 9999; }
-.boss-header { background: #4a154b; color: #fff; padding: 12px 20px; font-size: 18px; font-weight: 700; }
+.boss-header { background: #4a154b; color: #fff; padding: 12px 20px; font-size: 18px; font-weight: 700; position: relative; }
 .boss-content { padding: 20px; color: #1d1c1d; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.8; }
-.restore-hint { position: absolute; top: 0; right: 0; width: 60px; height: 60px; opacity: 0; }
+.restore-hint { position: absolute; top: 8px; right: 8px; width: 50px; height: 50px; background: rgba(255,255,255,0.03); border-radius: 4px; }
 </style>
 </head>
 <body>
@@ -92,16 +92,62 @@ function addIdea() {
   renderIdeas();
 }
 
-function syncData() {
-  const data = localStorage.getItem(STORAGE_KEY);
-  const blob = new Blob([data || '[]'], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `sidehustle_backup_${Date.now()}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-  alert('✅ 数据已导出！\n\n在另一设备上传此文件即可同步。');
+async function syncData() {
+  const token = localStorage.getItem('gh_token');
+  if (!token) {
+    const input = prompt('首次使用需要 GitHub Token\n\n1. 访问 github.com/settings/tokens\n2. 创建 token (勾选 gist 权限)\n3. 粘贴到下方：');
+    if (!input) return;
+    localStorage.setItem('gh_token', input.trim());
+    location.reload();
+    return;
+  }
+
+  const gistId = localStorage.getItem('gist_id');
+  const localData = localStorage.getItem(STORAGE_KEY) || '[]';
+
+  try {
+    if (!gistId) {
+      const res = await fetch('https://api.github.com/gists', {
+        method: 'POST',
+        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          description: 'SideHustle Capture Data',
+          public: false,
+          files: { 'ideas.json': { content: localData } }
+        })
+      });
+      const data = await res.json();
+      localStorage.setItem('gist_id', data.id);
+      alert('✅ 已上传到云端！');
+    } else {
+      const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+        headers: { 'Authorization': `token ${token}` }
+      });
+      const gist = await res.json();
+      const remoteData = gist.files['ideas.json'].content;
+
+      const local = JSON.parse(localData);
+      const remote = JSON.parse(remoteData);
+      const merged = [...local, ...remote].reduce((acc, item) => {
+        if (!acc.find(i => i.time === item.time && i.text === item.text)) acc.push(item);
+        return acc;
+      }, []).sort((a, b) => b.time - a.time);
+
+      const mergedStr = JSON.stringify(merged);
+      localStorage.setItem(STORAGE_KEY, mergedStr);
+
+      await fetch(`https://api.github.com/gists/${gistId}`, {
+        method: 'PATCH',
+        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ files: { 'ideas.json': { content: mergedStr } } })
+      });
+
+      renderIdeas();
+      alert('✅ 同步完成！');
+    }
+  } catch (e) {
+    alert('❌ 同步失败：' + e.message);
+  }
 }
 
 let bossMode = false;
