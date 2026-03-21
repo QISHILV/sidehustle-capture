@@ -201,7 +201,8 @@ bossHeaderEl.addEventListener('click', () => {
 
 let resetTimer;
 const syncBtn = document.getElementById('syncBtn');
-syncBtn.addEventListener('touchstart', (e) => {
+
+function startReset() {
   resetTimer = setTimeout(() => {
     if (confirm('🔄 确认重置同步配置？\n\n将清除 Token 和 Gist ID')) {
       localStorage.removeItem('gh_token');
@@ -210,9 +211,18 @@ syncBtn.addEventListener('touchstart', (e) => {
       location.reload();
     }
   }, 3000);
-});
-syncBtn.addEventListener('touchend', () => clearTimeout(resetTimer));
-syncBtn.addEventListener('touchcancel', () => clearTimeout(resetTimer));
+}
+
+function cancelReset() {
+  clearTimeout(resetTimer);
+}
+
+syncBtn.addEventListener('mousedown', startReset);
+syncBtn.addEventListener('mouseup', cancelReset);
+syncBtn.addEventListener('mouseleave', cancelReset);
+syncBtn.addEventListener('touchstart', startReset);
+syncBtn.addEventListener('touchend', cancelReset);
+syncBtn.addEventListener('touchcancel', cancelReset);
 
 renderIdeas();
 </script>
