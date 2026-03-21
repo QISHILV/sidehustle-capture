@@ -32,7 +32,7 @@ body { font-family: -apple-system, 'PingFang SC', sans-serif; background: var(--
 
 <div class="header" id="header">
   <div class="logo">💡 SideHustle</div>
-  <button class="sync-btn" onclick="syncData()">📱 同步</button>
+  <button class="sync-btn" id="syncBtn" onclick="syncData()">📱 同步</button>
 </div>
 
 <div class="container">
@@ -198,6 +198,21 @@ bossHeaderEl.addEventListener('click', () => {
   }
   tapTimer = setTimeout(() => headerTaps = 0, 500);
 });
+
+let resetTimer;
+const syncBtn = document.getElementById('syncBtn');
+syncBtn.addEventListener('touchstart', (e) => {
+  resetTimer = setTimeout(() => {
+    if (confirm('🔄 确认重置同步配置？\n\n将清除 Token 和 Gist ID')) {
+      localStorage.removeItem('gh_token');
+      localStorage.removeItem('gist_id');
+      alert('✅ 配置已清除！刷新页面后重新配置。');
+      location.reload();
+    }
+  }, 3000);
+});
+syncBtn.addEventListener('touchend', () => clearTimeout(resetTimer));
+syncBtn.addEventListener('touchcancel', () => clearTimeout(resetTimer));
 
 renderIdeas();
 </script>
