@@ -31,7 +31,7 @@ body { font-family: -apple-system, 'PingFang SC', sans-serif; background: var(--
 <body>
 
 <div class="header" id="header">
-  <div class="logo" onclick="if(confirm('清除缓存并刷新？')){localStorage.clear();caches.keys().then(k=>Promise.all(k.map(c=>caches.delete(c)))).then(()=>location.reload())}" style="cursor:pointer;">💡 SideHustle <span style="font-size:10px;opacity:0.5;">v1.0.3</span></div>
+  <div class="logo" onclick="if(confirm('清除缓存并刷新？')){localStorage.clear();caches.keys().then(k=>Promise.all(k.map(c=>caches.delete(c)))).then(()=>location.reload())}" style="cursor:pointer;">💡 SideHustle <span style="font-size:10px;opacity:0.5;">v1.0.4</span></div>
   <button class="sync-btn" id="syncBtn">📱 同步</button>
 </div>
 
@@ -133,24 +133,21 @@ async function syncData() {
 
       const configCode = `${token},${gistId}`;
 
-      const textarea = document.createElement('textarea');
-      textarea.value = configCode;
-      textarea.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:80%;max-width:500px;padding:20px;background:#1a1a2e;color:#fff;border:2px solid #7c6af7;border-radius:12px;font-size:14px;z-index:10000;';
-      textarea.readOnly = true;
-
       const overlay = document.createElement('div');
-      overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:9999;';
-      overlay.onclick = () => {
-        document.body.removeChild(overlay);
-        document.body.removeChild(textarea);
-      };
+      overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:9999;display:flex;align-items:center;justify-content:center;';
 
+      const box = document.createElement('div');
+      box.style.cssText = 'background:#1a1a2e;padding:24px;border-radius:12px;max-width:90%;width:400px;';
+      box.innerHTML = `
+        <div style="color:#fff;font-size:16px;margin-bottom:16px;text-align:center;">✅ 云端已创建！</div>
+        <div style="color:#aaa;font-size:14px;margin-bottom:12px;">复制配置码到其他设备：</div>
+        <textarea id="configCodeBox" readonly style="width:100%;padding:12px;background:#0e0e1a;color:#fff;border:1px solid #7c6af7;border-radius:8px;font-size:13px;resize:none;font-family:monospace;">${configCode}</textarea>
+        <button onclick="navigator.clipboard.writeText('${configCode}').then(()=>alert('✅ 已复制到剪贴板！'))" style="width:100%;margin-top:12px;padding:12px;background:#7c6af7;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;">📋 复制配置码</button>
+        <button onclick="this.parentElement.parentElement.remove()" style="width:100%;margin-top:8px;padding:12px;background:transparent;color:#aaa;border:1px solid #333;border-radius:8px;font-size:14px;cursor:pointer;">关闭</button>
+      `;
+
+      overlay.appendChild(box);
       document.body.appendChild(overlay);
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-
-      alert('✅ 配置码已复制到剪贴板！\n\n点击屏幕关闭，然后在其他设备粘贴。');
     } else {
       const res = await fetch(`https://api.github.com/gists/${gistId}`, {
         headers: { 'Authorization': `token ${token}` }
@@ -276,6 +273,10 @@ if ('serviceWorker' in navigator) {
       window.location.reload();
     });
   });
+}
+
+if (localStorage.getItem('gh_token') && localStorage.getItem('gist_id')) {
+  syncData().catch(err => console.log('Auto sync failed:', err));
 }
 
 renderIdeas();
