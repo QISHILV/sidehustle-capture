@@ -31,7 +31,7 @@ body { font-family: -apple-system, 'PingFang SC', sans-serif; background: var(--
 <body>
 
 <div class="header" id="header">
-  <div class="logo">💡 SideHustle <span style="font-size:10px;opacity:0.5;">v1.0.1</span></div>
+  <div class="logo">💡 SideHustle <span style="font-size:10px;opacity:0.5;">v1.0.2</span></div>
   <button class="sync-btn" id="syncBtn">📱 同步</button>
 </div>
 
@@ -132,7 +132,25 @@ async function syncData() {
       localStorage.setItem('gist_id', gistId);
 
       const configCode = `${token},${gistId}`;
-      prompt('✅ 云端已创建！\n\n📋 复制下方配置码到其他设备：', configCode);
+
+      const textarea = document.createElement('textarea');
+      textarea.value = configCode;
+      textarea.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:80%;max-width:500px;padding:20px;background:#1a1a2e;color:#fff;border:2px solid #7c6af7;border-radius:12px;font-size:14px;z-index:10000;';
+      textarea.readOnly = true;
+
+      const overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:9999;';
+      overlay.onclick = () => {
+        document.body.removeChild(overlay);
+        document.body.removeChild(textarea);
+      };
+
+      document.body.appendChild(overlay);
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+
+      alert('✅ 配置码已复制到剪贴板！\n\n点击屏幕关闭，然后在其他设备粘贴。');
     } else {
       const res = await fetch(`https://api.github.com/gists/${gistId}`, {
         headers: { 'Authorization': `token ${token}` }
