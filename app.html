@@ -31,7 +31,7 @@ body { font-family: -apple-system, 'PingFang SC', sans-serif; background: var(--
 <body>
 
 <div class="header" id="header">
-  <div class="logo">💡 SideHustle <span style="font-size:10px;opacity:0.5;">v1.0.2</span></div>
+  <div class="logo" onclick="if(confirm('清除缓存并刷新？')){localStorage.clear();caches.keys().then(k=>Promise.all(k.map(c=>caches.delete(c)))).then(()=>location.reload())}" style="cursor:pointer;">💡 SideHustle <span style="font-size:10px;opacity:0.5;">v1.0.3</span></div>
   <button class="sync-btn" id="syncBtn">📱 同步</button>
 </div>
 
