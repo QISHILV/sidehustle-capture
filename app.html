@@ -16,12 +16,18 @@ body { font-family: -apple-system, 'PingFang SC', sans-serif; background: var(--
 .header { padding: 16px 20px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
 .logo { font-size: 18px; font-weight: 700; }
 .sync-btn { background: var(--accent); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; cursor: pointer; }
-.voice-btn { background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 8px 16px; border-radius: 6px; font-size: 14px; cursor: pointer; margin-left: 8px; }
-.voice-btn.recording { background: var(--accent); color: #fff; animation: pulse 1.5s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
 .container { max-width: 800px; margin: 0 auto; padding: 24px 20px; }
-.input-box { width: 100%; min-height: 120px; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; color: var(--text); font-size: 16px; resize: vertical; }
-.btn-add { background: var(--accent); color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 12px; width: 100%; }
+.input-box { width: 100%; min-height: 120px; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; color: var(--text); font-size: 16px; resize: vertical; font-family: inherit; }
+.action-row { display: flex; gap: 8px; margin-top: 12px; }
+.action-btn { flex: 1; border: none; padding: 12px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.action-btn.voice { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+.action-btn.voice.recording { background: var(--accent); color: #fff; animation: pulse 1.5s infinite; }
+.action-btn.photo { background: transparent; color: #34d399; border: 1px solid #34d399; }
+.action-btn.save { background: var(--accent); color: #fff; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+.img-preview { margin-top: 12px; position: relative; display: inline-block; }
+.img-preview img { max-width: 100%; max-height: 200px; border-radius: 8px; border: 1px solid var(--border); }
+.img-preview .remove-img { position: absolute; top: -8px; right: -8px; width: 24px; height: 24px; background: #f87171; color: #fff; border: none; border-radius: 50%; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .ideas { margin-top: 32px; }
 .idea-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 12px; }
 .idea-time { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
@@ -34,16 +40,19 @@ body { font-family: -apple-system, 'PingFang SC', sans-serif; background: var(--
 <body>
 
 <div class="header" id="header">
-  <div class="logo" onclick="if(confirm('清除缓存并刷新？\n\n注意：想法数据会保留')){const ideas=localStorage.getItem('sidehustle_ideas');localStorage.clear();if(ideas)localStorage.setItem('sidehustle_ideas',ideas);caches.keys().then(k=>Promise.all(k.map(c=>caches.delete(c)))).then(()=>location.reload())}" style="cursor:pointer;">💡 SideHustle <span style="font-size:10px;opacity:0.5;">v1.0.5</span></div>
-  <div>
-    <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()">🎤</button>
-    <button class="sync-btn" id="syncBtn">📱 同步</button>
-  </div>
+  <div class="logo" onclick="if(confirm('清除缓存并刷新？\n\n注意：想法数据会保留')){const ideas=localStorage.getItem('sidehustle_ideas');localStorage.clear();if(ideas)localStorage.setItem('sidehustle_ideas',ideas);caches.keys().then(k=>Promise.all(k.map(c=>caches.delete(c)))).then(()=>location.reload())}" style="cursor:pointer;">💡 SideHustle <span style="font-size:10px;opacity:0.5;">v1.0.6</span></div>
+  <button class="sync-btn" id="syncBtn">📱 同步</button>
 </div>
 
 <div class="container">
   <textarea class="input-box" id="ideaInput" placeholder="记录你的副业灵感..."></textarea>
-  <button class="btn-add" onclick="addIdea()">➕ 添加想法</button>
+  <div id="imgPreview"></div>
+  <div class="action-row">
+    <button class="action-btn voice" id="voiceBtn" onclick="toggleVoice()"><span id="voiceIcon">🎤</span> 录音</button>
+    <button class="action-btn photo" onclick="selectPhoto()">📷 图片</button>
+    <button class="action-btn save" onclick="addIdea()">💡 保存</button>
+  </div>
+  <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhoto(event)">
   <div class="ideas" id="ideasList"></div>
 </div>
 
@@ -62,6 +71,7 @@ body { font-family: -apple-system, 'PingFang SC', sans-serif; background: var(--
 <script>
 const STORAGE_KEY = 'sidehustle_ideas';
 const SYNC_KEY = 'sidehustle_sync';
+let currentImage = null;
 
 function loadIdeas() {
   const data = localStorage.getItem(STORAGE_KEY);
@@ -80,6 +90,7 @@ function renderIdeas() {
     <div class="idea-card">
       <div class="idea-time">${new Date(idea.time).toLocaleString('zh-CN')}</div>
       <div class="idea-text">${idea.text}</div>
+      ${idea.image ? `<img src="${idea.image}" style="max-width:100%;margin-top:12px;border-radius:8px;">` : ''}
     </div>
   `).join('');
 }
@@ -87,13 +98,45 @@ function renderIdeas() {
 function addIdea() {
   const input = document.getElementById('ideaInput');
   const text = input.value.trim();
-  if (!text) return;
+  if (!text && !currentImage) return;
 
   const ideas = loadIdeas();
-  ideas.unshift({ text, time: Date.now() });
+  const idea = { text, time: Date.now() };
+  if (currentImage) idea.image = currentImage;
+
+  ideas.unshift(idea);
   saveIdeas(ideas);
   input.value = '';
+  currentImage = null;
+  document.getElementById('imgPreview').innerHTML = '';
   renderIdeas();
+}
+
+function selectPhoto() {
+  document.getElementById('photoInput').click();
+}
+
+function handlePhoto(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    currentImage = ev.target.result;
+    document.getElementById('imgPreview').innerHTML = `
+      <div class="img-preview">
+        <img src="${currentImage}">
+        <button class="remove-img" onclick="removeImage()">×</button>
+      </div>
+    `;
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeImage() {
+  currentImage = null;
+  document.getElementById('imgPreview').innerHTML = '';
+  document.getElementById('photoInput').value = '';
 }
 
 let recognition;
@@ -122,7 +165,7 @@ function toggleVoice() {
   recognition.onstart = () => {
     isRecording = true;
     voiceBtn.classList.add('recording');
-    voiceBtn.textContent = '⏹️';
+    voiceBtn.innerHTML = '<span id="voiceIcon">⏹️</span> 停止';
   };
 
   recognition.onresult = (e) => {
@@ -136,14 +179,14 @@ function toggleVoice() {
   recognition.onend = () => {
     isRecording = false;
     voiceBtn.classList.remove('recording');
-    voiceBtn.textContent = '🎤';
+    voiceBtn.innerHTML = '<span id="voiceIcon">🎤</span> 录音';
   };
 
   recognition.onerror = (e) => {
     console.error('Speech recognition error:', e.error);
     isRecording = false;
     voiceBtn.classList.remove('recording');
-    voiceBtn.textContent = '🎤';
+    voiceBtn.innerHTML = '<span id="voiceIcon">🎤</span> 录音';
   };
 
   recognition.start();
