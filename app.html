@@ -16,6 +16,9 @@ body { font-family: -apple-system, 'PingFang SC', sans-serif; background: var(--
 .header { padding: 16px 20px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
 .logo { font-size: 18px; font-weight: 700; }
 .sync-btn { background: var(--accent); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; cursor: pointer; }
+.voice-btn { background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 8px 16px; border-radius: 6px; font-size: 14px; cursor: pointer; margin-left: 8px; }
+.voice-btn.recording { background: var(--accent); color: #fff; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
 .container { max-width: 800px; margin: 0 auto; padding: 24px 20px; }
 .input-box { width: 100%; min-height: 120px; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; color: var(--text); font-size: 16px; resize: vertical; }
 .btn-add { background: var(--accent); color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 12px; width: 100%; }
@@ -31,8 +34,11 @@ body { font-family: -apple-system, 'PingFang SC', sans-serif; background: var(--
 <body>
 
 <div class="header" id="header">
-  <div class="logo" onclick="if(confirm('清除缓存并刷新？')){localStorage.clear();caches.keys().then(k=>Promise.all(k.map(c=>caches.delete(c)))).then(()=>location.reload())}" style="cursor:pointer;">💡 SideHustle <span style="font-size:10px;opacity:0.5;">v1.0.4</span></div>
-  <button class="sync-btn" id="syncBtn">📱 同步</button>
+  <div class="logo" onclick="if(confirm('清除缓存并刷新？\n\n注意：想法数据会保留')){const ideas=localStorage.getItem('sidehustle_ideas');localStorage.clear();if(ideas)localStorage.setItem('sidehustle_ideas',ideas);caches.keys().then(k=>Promise.all(k.map(c=>caches.delete(c)))).then(()=>location.reload())}" style="cursor:pointer;">💡 SideHustle <span style="font-size:10px;opacity:0.5;">v1.0.5</span></div>
+  <div>
+    <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()">🎤</button>
+    <button class="sync-btn" id="syncBtn">📱 同步</button>
+  </div>
 </div>
 
 <div class="container">
@@ -88,6 +94,59 @@ function addIdea() {
   saveIdeas(ideas);
   input.value = '';
   renderIdeas();
+}
+
+let recognition;
+let isRecording = false;
+
+function toggleVoice() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    alert('❌ 浏览器不支持语音识别\n\n请使用 Chrome、Edge 或 Safari');
+    return;
+  }
+
+  if (isRecording) {
+    recognition.stop();
+    return;
+  }
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.lang = 'zh-CN';
+  recognition.continuous = true;
+  recognition.interimResults = true;
+
+  const voiceBtn = document.getElementById('voiceBtn');
+  const input = document.getElementById('ideaInput');
+
+  recognition.onstart = () => {
+    isRecording = true;
+    voiceBtn.classList.add('recording');
+    voiceBtn.textContent = '⏹️';
+  };
+
+  recognition.onresult = (e) => {
+    let transcript = '';
+    for (let i = 0; i < e.results.length; i++) {
+      transcript += e.results[i][0].transcript;
+    }
+    input.value = transcript;
+  };
+
+  recognition.onend = () => {
+    isRecording = false;
+    voiceBtn.classList.remove('recording');
+    voiceBtn.textContent = '🎤';
+  };
+
+  recognition.onerror = (e) => {
+    console.error('Speech recognition error:', e.error);
+    isRecording = false;
+    voiceBtn.classList.remove('recording');
+    voiceBtn.textContent = '🎤';
+  };
+
+  recognition.start();
 }
 
 async function syncData() {
